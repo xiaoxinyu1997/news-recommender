@@ -1,0 +1,53 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.NewsClassesMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.NewsClasses">
+        <result property="classid" column="classid" />
+        <result property="classification" column="classification" />
+
+    </resultMap>
+
+    <select id="Listclasses" resultMap="result">
+        SELECT * FROM NewsClasses
+    </select>
+
+
+    <select id="findclassByclassification"  resultMap="result">
+
+        SELECT * FROM NewsClasses where fication=#{fication}
+    </select>
+
+
+
+    <!--
+     使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型
+     resultType="me.gacl.domain.User"就表示将查询结果封装成一个User类的对象返回
+    User类就是users表所对应的实体类
+    -->
+
+    <insert id="insertclasses" parameterType="com.meibanlu.qa.service.entity.NewsClasses"
+            keyProperty="classid" useGeneratedKeys="true">
+        INSERT INTO NewsClasses
+        (
+        classid,classification
+        )
+        VALUES (
+        #{classid},
+        #{classification}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from NewsClasses where classid=#{classid}
+    </delete>
+    <update id="Update" parameterType="com.meibanlu.qa.service.entity.Audios">
+        update NewsClasses set classification=#{classification} where classid=#{classid}
+    </update>
+
+    <select id="getAllClass" resultType="com.meibanlu.qa.service.entity.NewsClasses">
+        select *
+        from NewsClasses
+    </select>
+</mapper>

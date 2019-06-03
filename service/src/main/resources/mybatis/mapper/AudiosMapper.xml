@@ -1,0 +1,171 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.AudiosMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.Audios">
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="singer" column="singer"/>
+        <result property="tags" column="tags" />
+        <result property="time" column="time" />
+        <result property="album" column="album" />
+        <result property="click" column="collect" />
+        <result property="discuss" column="discuss"/>
+        <result property="shares" column="shares" />
+        <result property="publishtime" column="publishtime" />
+        <result property="lyric" column="lyric"/>
+        <result property="qianqian" column="qianqian"/>
+        <result property="kuwourl" column="kuwourl"/>
+    </resultMap>
+
+    <!--根据ID集合查询音乐音频-->
+    <select id="queryByIds" resultMap="result">
+        select *
+        from test.Audios
+        <where>
+            id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=" )">
+            #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="Listaudios" resultMap="result">
+        SELECT * FROM Audios limit 36
+    </select>
+
+
+    <select id="findAudiosByName"  resultMap="result">
+
+           SELECT * FROM Audios where name=#{name}
+    </select>
+
+    <select id="findAudiosBysinger"  resultMap="result">
+
+        SELECT * FROM Audios where singer=#{singer}
+    </select>
+
+    <select id="findAudiosBytags"  resultMap="result">
+
+        SELECT * FROM Audios where tags=#{tags}
+    </select>
+
+    <select id="findAudiosByall"  resultMap="result" parameterType="java.lang.String" >
+         ${_parameter}
+    </select>
+
+
+
+
+    <!--
+     使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型
+     resultType="me.gacl.domain.User"就表示将查询结果封装成一个User类的对象返回
+    User类就是users表所对应的实体类
+    -->
+
+   <insert id="insertaudios" parameterType="com.meibanlu.qa.service.entity.Audios"
+           keyProperty="id" useGeneratedKeys="true">
+       INSERT INTO Audios
+       (
+       id,name,singer,tags,time,qianqianurl,image,album,click,collect,discuss,shares,publishtime,lyric,qianqian,kuwourl
+       )
+       VALUES (
+       #{id},
+       #{name},
+       #{singer},
+       #{tags},
+       #{time},
+       #{qianqianurl},
+       #{image},
+       #{album},
+       #{click},
+       #{collect},
+       #{discuss},
+       #{shares},
+       #{publishtime},
+       #{lyric},
+       #{qianqian},
+       #{kuwourl}
+       )
+   </insert>
+
+   <delete id="delete" parameterType="int">
+       delete from Audios where id=#{id}
+   </delete>
+
+   <update id="Update" parameterType="com.meibanlu.qa.service.entity.Audios">
+       update Audios set name=#{name},singer=#{singer},tags=#{tags},
+           time=#{time},qianqianurl=#{qianqianurl},album=#{album},click=#{click},collect=#{collect},
+           discuss=#{discuss},shares=#{shares},publishtime=#{publishtime},lyric=#{lyric},
+           qianqian=#{qianqian},kuwourl=#{kuwourl} where id=#{id}
+   </update>
+
+
+    <select id="getAudioBySinger" parameterType="java.lang.String"
+            resultType="com.meibanlu.qa.service.entity.Audios">
+        select
+        id,name,singer,time,image,album,lyric,qianqian,kuwourl from
+        Audios
+        where
+        singer = #{singer}
+        order by click DESC
+    </select>
+
+    <select id="getAudioByName" parameterType="java.lang.String"
+            resultType="com.meibanlu.qa.service.entity.Audios">
+        select
+        id,name,singer,time,image,album,lyric,qianqian,kuwourl from
+        Audios
+        where
+        name like #{name}
+        order by click DESC
+    </select>
+
+    <select id="getAudioByTag" parameterType="java.lang.String"
+            resultType="com.meibanlu.qa.service.entity.Audios">
+        select
+        id,name,singer,time,image,album,lyric,qianqian,kuwourl from
+        Audios
+        where
+        tags like #{name}
+        order by click DESC
+    </select>
+
+    <select id="getAudioByNameAndSinger" parameterType="java.util.Map"
+            resultType="com.meibanlu.qa.service.entity.Audios">
+        select
+        id,name,singer,time,image,album,lyric,qianqian,kuwourl from
+        Audios
+        where
+        name like #{name} and singer=#{singer}
+        order by click DESC
+    </select>
+
+    <!-- 根据音乐点击率获取音乐,并筛选掉用户听过的 -->
+    <select id="feverBasedrecommend" parameterType="int" resultType="com.meibanlu.qa.service.entity.Audios">
+        select * from
+        Audios WHERE id NOT IN (SELECT audiosid FROM UserAudiosBehavior WHERE userid=#{userid})
+        order by click DESC limit #{limit}
+    </select>
+
+    <!-- 根据音乐点击率获取音乐 -->
+    <select id="hotMusic" parameterType="int" resultType="com.meibanlu.qa.service.entity.Audios">
+        select * from
+        Audios
+        order by click DESC limit #{limit}
+    </select>
+
+    <!-- 根据标签和数量获取音乐,并筛选掉用户听过的 -->
+    <select id="getAudiosByTagAndNumber" parameterType="java.util.Map"
+            resultType="com.meibanlu.qa.service.entity.Audios">
+        select  *  from Audios
+        where tags like #{tags}
+        order by click DESC limit #{limit}
+    </select>
+
+    <select id="getTagsByAudioID" parameterType="int" resultType="java.lang.String">
+        select tags from Audios where id=#{audiosid}
+    </select>
+
+</mapper>

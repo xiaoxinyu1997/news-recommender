@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.service.mapper.DriveBehaviorMapper">
+
+    <resultMap id="driveBehaviorMap" type="com.meibanlu.qa.service.entity.DriveBehavior">
+        <result property="timeStamp" column="timeStampCreate"/>
+        <result property="id" column="id"/>
+        <result property="userId" column="userId"/>
+        <result property="carId" column="carId"/>
+        <result property="maxRpm" column="maxRpm"/>
+        <result property="minRpm" column="minRpm"/>
+        <result property="maxSpd" column="maxSpd"/>
+        <result property="avgSpd" column="avgSpd"/>
+        <result property="avgSpdCalcNum" column="avgSpdCalcNum"/>
+        <result property="maxAcl" column="maxAcl"/>
+        <result property="mileT" column="mileT"/>
+        <result property="fuelT" column="fuelT"/>
+        <result property="miles" column="miles"/>
+        <result property="mileDay" column="mileDay"/>
+        <result property="fuels" column="fuels"/>
+        <result property="fuelDay" column="fuelDay"/>
+        <result property="times" column="times"/>
+        <result property="startNum" column="startNum"/>
+        <result property="brAkes" column="brAkes"/>
+        <result property="racls" column="racls"/>
+        <result property="power" column="power"/>
+    </resultMap>
+
+    <!--按条件获取统计后的驾驶行为信息-->
+    <select id="fetchDriveBehaviorByRange" resultMap="driveBehaviorMap">
+        select a.*
+        from test.DriveBehaviorTrace a
+        where a.userId = #{userId}
+        and a.carId = #{carId}
+        and a.timeStampCreate >= #{timeStampStart}
+        and #{timeStampEnd} > a.timeStampCreate
+        order by a.timeStampCreate asc
+    </select>
+    <!--按条件获取统计后的驾驶行为信息-->
+    <select id="fetchLastDriveBehaviorByTimeStamp" resultMap="driveBehaviorMap">
+        select a.*
+        from test.DriveBehaviorTrace a
+        where a.userId = #{userId}
+        and a.carId = #{carId}
+        and a.timeStampCreate = #{timeStamp}
+    </select>
+    <!--获取指定时间戳之前的最后一条数据-->
+    <select id="fetchLastDriveBehaviorBeforeTimeStamp" resultMap="driveBehaviorMap">
+        select a.*
+        from test.DriveBehavior a
+        where a.userId = #{userId}
+        and a.carId = #{carId}
+        and a.timeStampCreate = (select max(b.timeStampCreate) from test.DriveBehavior b where a.userId = #{userId} and a.carId = #{carId} and #{timeStamp} > a.timeStampCreate)
+    </select>
+    <!--保存驾驶行为信息-->
+    <insert id="saveDriveBehavior" parameterType="com.meibanlu.qa.service.entity.DriveBehavior">
+        insert into test.DriveBehavior
+        (
+        timeStampCreate,
+        userId,
+        carId,
+        maxRpm,
+        minRpm,
+        maxSpd,
+        avgSpd,
+        avgSpdCalcNum,
+        maxAcl,
+        mileT,
+        fuelT,
+        miles,
+        mileDay,
+        fuels,
+        fuelDay,
+        times,
+        startNum,
+        brAkes,
+        racls,
+        power
+        )
+        values
+        (
+        #{timeStamp},
+        #{userId},
+        #{carId},
+        #{maxRpm},
+        #{minRpm},
+        #{maxSpd},
+        #{avgSpd},
+        #{avgSpdCalcNum},
+        #{maxAcl},
+        #{mileT},
+        #{fuelT},
+        #{miles},
+        #{mileDay},
+        #{fuels},
+        #{fuelDay},
+        #{times},
+        #{startNum},
+        #{brAkes},
+        #{racls},
+        #{power}
+        )
+    </insert>
+    <!--保存统计的驾驶行为信息-->
+    <insert id="saveDriveBehaviorTrace" parameterType="com.meibanlu.qa.service.entity.DriveBehavior">
+        insert into test.DriveBehaviorTrace
+        (
+        timeStampCreate,
+        userId,
+        carId,
+        maxRpm,
+        minRpm,
+        maxSpd,
+        avgSpd,
+        avgSpdCalcNum,
+        maxAcl,
+        mileT,
+        fuelT,
+        miles,
+        mileDay,
+        fuels,
+        fuelDay,
+        times,
+        startNum,
+        brAkes,
+        racls,
+        power
+        )
+        values
+        (
+        #{timeStamp},
+        #{userId},
+        #{carId},
+        #{maxRpm},
+        #{minRpm},
+        #{maxSpd},
+        #{avgSpd},
+        #{avgSpdCalcNum},
+        #{maxAcl},
+        #{mileT},
+        #{fuelT},
+        #{miles},
+        #{mileDay},
+        #{fuels},
+        #{fuelDay},
+        #{times},
+        #{startNum},
+        #{brAkes},
+        #{racls},
+        #{power}
+        )
+    </insert>
+    <!--    更新统计的驾驶行为平均速度-->
+    <update id="updateDriveBehaviorTraceAvgSpeed">
+        update test.DriveBehaviorTrace
+        set avgSpd = #{avgSpd}, avgSpdCalcNum = avgSpdCalcNum+1
+        where id = #{driveBehaviorId}
+    </update>
+</mapper>

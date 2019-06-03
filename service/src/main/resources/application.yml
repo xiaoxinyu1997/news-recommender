@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: service
+  datasource:
+    url: jdbc:mysql://47.100.163.195:3306/test?useUnicode=true&characterEncoding=utf8&&useSSL=true&allowMultiQueries=true
+    username: root
+    password: yourpassword
+    initialSize: 10
+    minIdle: 5
+    maxActive: 100
+    validationQuery: SELECT 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 30000
+  redis:
+     host: 47.100.163.195
+#      host: 127.0.0.1
+      port: 6379
+      password: yourpasswordxiaomeibanlv
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:30000/eureka
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+server:
+  servlet:
+    context-path: /qa-service
+  port: 30002
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+logging:
+  level:
+    com:
+      meibanlu:
+        qa:
+          service:
+            mapper: debug

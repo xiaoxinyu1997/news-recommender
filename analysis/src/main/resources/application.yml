@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: analysis
+  datasource:
+    url: jdbc:mysql://47.100.163.195:3306/qa?useUnicode=true&characterEncoding=utf8&&useSSL=true
+    username: root
+    password: yourpassword
+    initialSize: 5
+    minIdle: 5
+    maxActive: 100
+    validationQuery: SELECT 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 30000
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:30000/eureka
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+server:
+  servlet:
+    context-path: /qa-analysis
+  port: 30001
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml

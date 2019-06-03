@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.analysis.dao.IntentDao">
+
+    <resultMap id="slotMap" type="com.meibanlu.qa.analysis.entity.Slot">
+        <id property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="patternMatcher" column="patternMatcher"/>
+        <result property="matcherKey" column="matcherKey"/>
+        <result property="mainWord" column="mainWord"/>
+    </resultMap>
+    <resultMap id="requiredMap" type="com.meibanlu.qa.analysis.entity.SlotSeqRequireElement">
+        <id property="id" column="id"/>
+        <result property="slotSeqId" column="slotSeqId"/>
+        <result property="key" column="key"/>
+        <result property="value" column="value"/>
+        <result property="slotId" column="slotId"/>
+        <result property="must" column="must"/>
+    </resultMap>
+    <resultMap id="intentMap" type="com.meibanlu.qa.analysis.entity.Intent">
+        <id property="id" column="id"/>
+        <result property="intentName" column="intentName"/>
+    </resultMap>
+    <resultMap id="intentMapWithSeq" type="com.meibanlu.qa.analysis.entity.Intent">
+        <id property="id" column="id"/>
+        <result property="intentName" column="intentName"/>
+        <result property="domain" column="domain"/>
+        <collection property="slotSeqList" ofType="com.meibanlu.qa.analysis.entity.SlotSeq">
+            <result property="id" column="slotId"/>
+            <result property="intentId" column="intentId"/>
+            <result property="seqName" column="seqName"/>
+            <result property="action" column="action"/>
+            <result property="seqType" column="seqType"/>
+            <result property="targetUrl" column="targetUrl"/>
+            <result property="seqPriority" column="seqPriority"/>
+            <result property="seqNamePriority" column="seqNamePriority"/>
+            <collection property="slotSeq"
+                        ofType="com.meibanlu.qa.analysis.entity.Slot"
+                        column="slotId"
+                        select="querySlotBySlotSeqId" />
+            <collection property="slotSeqRequireElement"
+                        ofType="com.meibanlu.qa.analysis.entity.SlotSeqRequireElement"
+                        column="slotId"
+                        select="querySlotSeqRequiredElement" />
+        </collection>
+    </resultMap>
+
+    <!--根据词槽序ID查询该词槽序对应的词槽-->
+    <select id="querySlotBySlotSeqId" parameterType="java.lang.String" resultMap="slotMap">
+        select qs.id, qs.type, qs.patternMatcher, qs.matcherKey, qs.mainWord
+        from qa_slot qs, qa_seq_slot_rel qssr
+        where qs.id = qssr.slotId and qssr.slotSeqId = #{value}
+        order by qssr.slotPosition asc
+    </select>
+    <!--根据词槽序ID查询该词槽序需要的元素列表-->
+    <select id="querySlotSeqRequiredElement" parameterType="java.lang.String" resultMap="requiredMap">
+        select qser.id, qser.slotSeqId, qser.key, qser.value, qser.slotId, qser.must
+        from qa_seq_element_requirment qser
+        where qser.slotSeqId = #{value}
+    </select>
+
+    <!--根据意图ID查询意图-->
+    <select id="queryIntentById" resultMap="intentMapWithSeq">
+        select qi.id, qi.intentName, qi.domain, qss.id as slotId, qss.intentId, qss.seqName, qss.action, qss.seqType, qss.targetUrl, qss.seqPriority, qss.seqNamePriority
+        from qa_intent qi
+        left join qa_seq_slot qss on qss.intentId=qi.id
+        where qi.id = #{intentId}
+    </select>
+    <!--查询意图集合-->
+    <select id="listIntent" resultMap="intentMapWithSeq">
+        select qi.id, qi.intentName, qi.domain, qss.id as slotId, qss.intentId, qss.seqName, qss.action, qss.seqType, qss.targetUrl, qss.seqPriority, qss.seqNamePriority
+        from qa_intent qi
+        left join qa_seq_slot qss on qss.intentId=qi.id
+        order by qi.id asc
+    </select>
+    <!--插入新意图-->
+    <insert id="insertIntent">
+        insert into qa_intent (id, intentName, domain)
+        values (#{intentId}, #{intentName}, #{domain})
+    </insert>
+    <!--更新意图-->
+    <update id="updateIntent">
+        update qa_intent set
+        intentName=#{intentName}
+        where id=#{intentId}
+    </update>
+    <!--根据意图ID删除意图-->
+    <delete id="deleteIntent">
+        delete from qa_intent
+        where id=#{intentId}
+    </delete>
+</mapper>

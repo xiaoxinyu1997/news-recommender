@@ -1,0 +1,157 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.NewsMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.News">
+        <result property="newsid" column="newsid" />
+        <result property="newstitle" column="newstitle" />
+        <result property="href" column="href"/>
+        <result property="content" column="content" />
+        <result property="classid" column="classid" />
+        <result property="ranking" column="ranking"/>
+        <result property="source" column="source" />
+        <result property="time" column="time" />
+        <result property="place" column="place"/>
+        <result property="keywords" column="keywords" />
+        <result property="terms" column="terms" />
+        <result property="website" column="website" />
+        <result property="audiosurl" column="audiosurl" />
+    </resultMap>
+
+    <!--根据ID集合查询新闻-->
+    <select id="queryByIds" resultMap="result">
+        select *
+        from test.News
+        <where>
+            newsid in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=" )">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findHuanqiuwang" resultMap="result">
+        SELECT * FROM News where website='环球网' and ttsTag=1 order by newsid desc limit 100
+    </select>
+
+    <select id="findCnr" resultMap="result">
+        SELECT * FROM News where ttsTag=1 and (website='cnr' or website='cnr_mp3') order by newsid desc limit 100
+    </select>
+
+    <select id="Listnews" resultMap="result">
+        SELECT * FROM News limit 100
+    </select>
+
+
+    <select id="findnewsBykeywords"  resultMap="result">
+
+        SELECT * FROM News where keywords like "%"#{keywords}"%"
+    </select>
+
+    <select id="findnewsByclassification"  resultMap="result">
+
+        select News.*,NewsClasses.classification from NewsClasses inner join News on News.classid=NewsClasses.classid where NewsClasses.classification=#{classification};
+    </select>
+    <!--
+     这里使用的内连接：显示左表和右表符合连接条件的记录（on），再用where条件查询。
+     select News.*,Classes.classification from Classes inner join News on News.classid=Classes.classid where Classes.classification='aaaaaa'
+    -->
+
+    <insert id="insertnews" parameterType="com.meibanlu.qa.service.entity.News"
+            keyProperty="newsid" useGeneratedKeys="true">
+        INSERT INTO News
+        (
+        newsid,newstitle,href,content,classid,ranking,source,time,place,keywords,terms
+        )
+        VALUES (
+        #{newsid},
+        #{newstitle},
+        #{href},
+        #{content},
+        #{classid},
+        #{ranking},
+        #{source},
+        #{time},
+        #{place},
+        #{keywords},
+        #{terms}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from News where newsid=#{newsid}
+    </delete>
+
+    <update id="Update" parameterType="com.meibanlu.qa.service.entity.News">
+        update News set newstitle=#{newstitle},href=#{href},content=#{content},
+        classid=#{classid},ranking=#{ranking},source=#{source},time=#{time},place=#{place},keywords=#{keywords},terms=#{terms} where newsid=#{newsid}
+    </update>
+
+    <!-- 最新的新闻会放到列表的前面 -->
+    <select id="getAllNewsByTime" resultType="com.meibanlu.qa.service.entity.News">
+        select newsid,newstitle,audiosurl,source,website,keywords
+        from News WHERE ttsTag = 1
+        order by time DESC
+    </select>
+
+    <!-- 按分类查询新闻，若新闻在首页则按照热度排序；若不在首页，则按发布时间排序 -->
+    <select id="getClassRankNews" parameterType="int" resultType="com.meibanlu.qa.service.entity.News">
+        select * from (
+        select * from News
+        where ttsTag = 1 AND classid=#{classId}
+        order by time DESC)tb1
+        order by ranking DESC limit #{limit};
+    </select>
+
+    <!-- 按分类查询新闻，若新闻在首页则按照热度排序；若不在首页，则按发布时间排序 -->
+    <select id="getClassRankNewsAndFiltering" parameterType="int" resultType="com.meibanlu.qa.service.entity.News">
+        select * from (
+        select * from News
+        where ttsTag = 1 AND classid=#{classId} AND newsid NOT IN (SELECT newsid FROM UserNewsBehavior WHERE userid=#{userid})
+        order by time DESC)tb1
+        order by ranking DESC limit #{limit};
+    </select>
+
+    <select id="getNewsListByID" parameterType="java.util.List"
+            resultType="com.meibanlu.qa.service.entity.News">
+        select newsid,newstitle,audiosurl,source,website
+        from News where ttsTag = 1 and newsid in
+        <foreach collection="list" item="id" open="(" close=")"
+                 separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 按热度查询新闻 -->
+    <select id="getTopNews" resultType="com.meibanlu.qa.service.entity.News">
+        select news.newsid,news.newstitle,news.audiosurl,news.source,news.website from
+        News news where news.ttsTag = 1 order by news.time DESC, news.ranking limit 50
+    </select>
+
+    <!-- 按热度查询新闻并筛选掉用户听过的 -->
+    <select id="getFeverNews" resultType="com.meibanlu.qa.service.entity.News" parameterType="int">
+        SELECT newsid,newstitle,audiosurl,source,website FROM News WHERE ttsTag = 1 and newsid
+        NOT IN (SELECT newsid FROM UserNewsBehavior WHERE userid=#{userid}) order by ranking,time DESC limit 50;
+    </select>
+
+    <!-- 按指定分类与数量查询新闻并筛选掉用户听过的 -->
+    <select id="getNewsByClassesAndNumber" parameterType="int"
+            resultType="com.meibanlu.qa.service.entity.News">
+        select * from (
+        select newsid,newstitle,audiosurl,source,ranking,website from News
+        where newsid NOT IN (SELECT newsid FROM UserNewsBehavior WHERE userid=#{userid}) AND ttsTag = 1 AND  classid=#{classid}
+        order by time DESC limit #{limit})tb1
+        order by ranking ;
+    </select>
+
+    <!-- 按新闻id查找新闻分类 -->
+    <select id="getClassByNewsID" parameterType="int" resultType="int">
+    select classid
+    from News where newsid=#{id}
+    </select>
+
+    <select id="getNewsById"  resultMap="result">
+        select * from News where newsid=#{newsId} limit 1
+    </select>
+</mapper>

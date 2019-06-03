@@ -1,0 +1,95 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.XimalayaMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.Ximalaya">
+        <result property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="album" column="album"/>
+        <result property="image" column="image" />
+        <result property="publishtime" column="publishtime" />
+        <result property="src" column="src"/>
+        <result property="tags" column="tags" />
+        <result property="category" column="category" />
+    </resultMap>
+
+    <!--根据ID集合查询喜马拉雅-->
+    <select id="queryByIds" resultMap="result">
+        select *
+        from test.Ximalaya
+        <where>
+            id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=" )">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="Listximalaya" resultMap="result">
+        SELECT * FROM Ximalaya limit 36
+    </select>
+
+    <select id="findximalayaBytitle"  resultMap="result">
+        SELECT * FROM Ximalaya
+        where 1=1
+        <if test="singer != null">
+            and title like "%"#{singer}"%"
+        </if>
+        <if test="name != null">
+            and title like "%"#{name}"%"
+        </if>
+        <if test="audioTypeXs != null">
+            and category like "%"#{audioTypeXs}"%"
+        </if>
+        limit 36
+    </select>
+
+    <select id="findximalayaByAlbum"  resultMap="result">
+        SELECT * FROM Ximalaya
+        where 1=1
+        <if test="singer != null">
+            and album like "%"#{singer}"%"
+        </if>
+        <if test="name != null">
+            and title like "%"#{name}"%"
+        </if>
+        <if test="audioTypeXs != null">
+            and category like "%"#{audioTypeXs}"%"
+        </if>
+        limit 36
+    </select>
+
+    <select id="queryBySql"  resultMap="result" parameterType="java.lang.String" >
+         ${_parameter}
+    </select>
+
+
+
+    <insert id="insertximalaya" parameterType="com.meibanlu.qa.service.entity.Ximalaya"
+            keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO Ximalaya
+        (
+        id,title,album,image,publishtime,src,tags,category
+        )
+        VALUES (
+        #{id},
+        #{title},
+        #{album},
+        #{image},
+        #{publishtime},
+        #{src},
+        #{tags},
+        #{category}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from Ximalaya where id=#{id}
+    </delete>
+
+    <update id="Update" parameterType="com.meibanlu.qa.service.entity.Ximalaya">
+        update Ximalaya set title=#{title},album=#{album},image=#{image},
+        publishtime=#{publishtime},src=#{src},tags=#{tags},category=#{category} where id=#{id}
+    </update>
+</mapper>

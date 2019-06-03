@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.analysis.dao.SlotSeqRelDao">
+
+    <resultMap id="relMap" type="com.meibanlu.qa.analysis.entity.SlotSeqRel">
+        <id property="id" column="id"/>
+        <result property="slotId" column="slotId"/>
+        <result property="slotSeqId" column="slotSeqId"/>
+        <result property="slotPosition" column="slotPosition"/>
+    </resultMap>
+    <!--插入词槽-词槽序关系-->
+    <select id="insertSlotSeqRel" resultMap="relMap">
+        insert into qa_seq_slot_rel (id, slotId, slotSeqId, slotPosition)
+        values (#{relId}, #{slotId}, #{slotSeqId}, #{slotPosition})
+    </select>
+    <!--删除词槽-词槽序关系-->
+    <select id="deleteSlotSeqRelById">
+        delete from qa_seq_slot_rel
+        where id=#{relId}
+    </select>
+    <!--更新词槽-词槽序关系-->
+    <update id="updateSlotSeqRel">
+        update qa_seq_slot_rel set
+        slotPosition=#{slotPosition}
+        where id=#{relId}
+    </update>
+</mapper>

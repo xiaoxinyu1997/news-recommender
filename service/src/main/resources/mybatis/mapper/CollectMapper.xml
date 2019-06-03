@@ -1,0 +1,46 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.CollectMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.Collect">
+        <result property="id" column="id" />
+        <result property="type" column="type" />
+        <result property="typeId" column="typeId"/>
+
+    </resultMap>
+
+    <select id="listCollect" resultMap="result">
+        SELECT * FROM Collect
+    </select>
+
+    <!--根据条件查询收藏列表-->
+    <select id="queryCollected" resultMap="result">
+        select *
+        from test.Collect
+        where 1=1
+        <if test="userId != null">
+            and userId = #{userId}
+        </if>
+        <if test="collectionType != null">
+            and type = #{collectionType}
+        </if>
+        <if test="typeId != -1">
+            and typeId = #{typeId}
+        </if>
+        <if test="typeTags != null and collectionType!='相声' and collectionType!='小品' and collectionType!='评书' and collectionType!='新闻'">
+            and typeTags like "%"#{typeTags}"%"
+        </if>
+        order by id asc
+        limit 100
+    </select>
+
+    <insert id="insertCollect" parameterType="com.meibanlu.qa.service.entity.Collect"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into Collect
+        (
+        id, type, typeId, userid, typeTags
+        )
+        select #{id}, #{type}, #{typeId}, #{userId}, tags from Audios where id=#{typeId} limit 1
+    </insert>
+</mapper>

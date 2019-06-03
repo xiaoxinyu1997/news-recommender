@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.service.mapper.CarTroubleMapper">
+
+    <resultMap id="carTroubleMap" type="com.meibanlu.qa.service.entity.CarTrouble">
+        <result property="userId" column="userId"/>
+        <result property="carId" column="carId"/>
+        <result property="timeStampCreate" column="timeStampCreate"/>
+        <result property="timeStampDay" column="timeStampDay"/>
+        <result property="troubleCode" column="troubleCode"/>
+        <result property="troubleName" column="troubleName"/>
+        <result property="troubleIcon" column="troubleIcon"/>
+    </resultMap>
+
+    <!--按条件获取车辆故障信息-->
+    <select id="fetchCarTroubleByRange" resultMap="carTroubleMap">
+        select c.*
+        from test.CarTrouble c
+        where c.userId = #{userId}
+        and c.carId = #{carId}
+        and c.timeStampDay >= #{timeStampStart}
+        and #{timeStampEnd} > c.timeStampDay
+        order by c.timeStampCreate asc, troubleCode asc
+    </select>
+    <!--保存车辆故障信息-->
+    <insert id="saveCarTrouble" parameterType="com.meibanlu.qa.service.entity.CarTrouble">
+        insert ignore into test.CarTrouble
+        (
+        timeStampCreate,
+        timeStampDay,
+        userId,
+        carId,
+        troubleCode,
+        troubleName,
+        troubleIcon
+        )
+        values
+        (
+        unix_timestamp(now())*1000,
+        UNIX_TIMESTAMP(CAST(SYSDATE()AS DATE)),
+        #{userId},
+        #{carId},
+        #{troubleCode},
+        #{troubleName},
+        #{troubleIcon}
+        )
+    </insert>
+    <!--批量保存车辆故障信息-->
+    <insert id="saveCarTroubleBatch" parameterType="java.util.List">
+        insert ignore into test.CarTrouble
+        (
+        timeStampCreate,
+        timeStampDay,
+        userId,
+        carId,
+        troubleCode,
+        troubleName,
+        troubleIcon
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            unix_timestamp(now())*1000,
+            UNIX_TIMESTAMP(CAST(SYSDATE()AS DATE)),
+            #{item.userId},
+            #{item.carId},
+            #{item.troubleCode},
+            #{item.troubleName},
+            #{item.troubleIcon}
+            )
+        </foreach>
+    </insert>
+    <!--删除车辆故障信息-->
+    <delete id="deleteCarTrouble">
+        delete test.DriveBehaviorTrace
+        where 1 = 1
+        <choose>
+            <when test="id != -1">
+                and id = #{id}
+            </when>
+        </choose>
+        <choose>
+            <when test="userId != -1">
+                and userId = #{userId}
+            </when>
+        </choose>
+        <choose>
+            <when test="carId != -1">
+                and carId = #{carId}
+            </when>
+        </choose>
+    </delete>
+</mapper>

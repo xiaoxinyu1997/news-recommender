@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.ZhongguozhishengMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.Zhongguozhisheng">
+        <result property="id" column="id" />
+        <result property="time" column="time" />
+        <result property="mp3_url" column="mp3_url"/>
+        <result property="time" column="time"/>
+    </resultMap>
+
+    <select id="ListZhongguozhisheng" resultMap="result">
+        SELECT * FROM Zhongguozhisheng order by time desc limit 100
+    </select>
+
+
+    <select id="findZhongguozhishengBytime"  resultMap="result">
+
+        SELECT * FROM Zhongguozhisheng where time=#{time}
+    </select>
+
+    <insert id="insertZhongguozhisheng" parameterType="com.meibanlu.qa.service.entity.Zhongguozhisheng"
+            keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO Zhongguozhisheng
+        (
+        title,mp3_url,time
+        )
+        VALUES (
+        #{title},
+        #{mp3_url},
+        #{time}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from Zhongguozhisheng where id=#{id}
+    </delete>
+
+    <update id="Update" parameterType="com.meibanlu.qa.service.entity.Zhongguozhisheng">
+        update Zhongguozhisheng set title=#{title},mp3_url=#{mp3_url},time=#{time} where id=#{id}
+    </update>
+</mapper>

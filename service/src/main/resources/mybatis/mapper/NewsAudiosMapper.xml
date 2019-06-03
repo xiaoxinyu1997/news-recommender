@@ -1,0 +1,49 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.NewsAudiosMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.NewsAudios">
+        <result property="id" column="id" />
+        <result property="time" column="time" />
+        <result property="url" column="url"/>
+    </resultMap>
+
+    <select id="Listnewsaudios" resultMap="result">
+        SELECT * FROM NewsAudios order by time desc limit 100
+    </select>
+
+
+    <select id="findnewsaudiosBytime"  resultMap="result">
+
+        SELECT * FROM NewsAudios where time=#{time}
+    </select>
+    <!--
+     使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型
+     resultType="me.gacl.domain.User"就表示将查询结果封装成一个User类的对象返回
+    User类就是users表所对应的实体类
+    -->
+    <!--
+     注意keyproperty要为对应表的主键，否则返回出错
+    -->
+    <insert id="insertnewsaudios" parameterType="com.meibanlu.qa.service.entity.NewsAudios"
+            keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO NewsAudios
+        (
+        time,url
+        )
+        VALUES (
+        #{time},
+        #{url}
+
+        )
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from NewsAudios where id=#{id}
+    </delete>
+
+    <update id="Update" parameterType="com.meibanlu.qa.service.entity.NewsAudios">
+        update NewsAudios set time=#{time},url=#{url} where id=#{id}
+    </update>
+</mapper>

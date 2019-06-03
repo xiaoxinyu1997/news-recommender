@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.analysis.dao.SlotSeqDao">
+
+    <resultMap id="slotSeqMap" type="com.meibanlu.qa.analysis.entity.SlotSeq">
+        <id property="id" column="id"/>
+        <result property="intentId" column="intentId"/>
+        <result property="seqName" column="seqName"/>
+        <result property="action" column="action"/>
+        <result property="seqType" column="seqType"/>
+        <result property="targetUrl" column="targetUrl"/>
+        <collection property="slotSeqRequireElement" ofType="com.meibanlu.qa.analysis.entity.SlotSeqRequireElement">
+            <result property="id" column="id"/>
+            <result property="slotSeqId" column="slotSeqId"/>
+            <result property="key" column="key"/>
+            <result property="value" column="value"/>
+            <result property="slotId" column="slotId"/>
+            <result property="must" column="must"/>
+        </collection>
+    </resultMap>
+    <!--根据词槽序ID查询词槽序-->
+    <select id="querySlotSeqById" resultMap="slotSeqMap">
+        select qss.*, qser.*
+        from qa_seq_slot qss
+        left join qa_seq_element_requirment qser on qser.slotSeqId=qss.id
+        where qss.id = #{seqId}
+    </select>
+    <!--根据意图ID查询词槽序集合-->
+    <select id="querySlotSeqByIntentId" resultMap="slotSeqMap">
+        select qss.*, qser.*
+        from qa_seq_slot qss
+        left join qa_seq_element_requirment qser on qser.slotSeqId=qss.id
+        where qss.intentId = #{intentId}
+        order by qss.id asc
+    </select>
+    <!--插入新词槽序-->
+    <insert id="insertSlotSeq">
+        insert into qa_seq_slot (id, intentId, seqName, action, seqType, targetUrl, seqPriority, seqNamePriority)
+        values (#{id}, #{intentId}, #{seqName}, #{action}, #{seqType}, #{targetUrl}, ${seqPriority}, #{seqNamePriority})
+    </insert>
+    <!--更新词槽序-->
+    <update id="updateSlotSeq">
+        update qa_seq_slot set
+        seqName=#{seqName},
+        intentId=#{intentId},
+        action=#{action},
+        seqType=#{seqType},
+        targetUrl=#{targetUrl},
+        seqPriority=#{seqPriority},
+        seqNamePriority=#{seqNamePriority}
+        where id=#{id}
+    </update>
+    <!--根据词槽序ID删除词槽序-->
+    <delete id="deleteSlotSeqById">
+        delete from qa_seq_slot
+        where id=#{id}
+    </delete>
+</mapper>

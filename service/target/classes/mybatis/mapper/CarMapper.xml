@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.service.mapper.CarMapper">
+
+    <resultMap id="carMap" type="com.meibanlu.qa.service.entity.Car">
+        <result property="id" column="id"/>
+        <result property="userId" column="userId"/>
+        <result property="carNumber" column="carNumber"/>
+        <result property="carBrand" column="carBrand"/>
+        <result property="carModel" column="carModel"/>
+        <result property="dateOfBuy" column="dateOfBuy"/>
+        <result property="carCity" column="carCity"/>
+    </resultMap>
+
+    <!--按用户ID查询车辆信息集合-->
+    <select id="fetchCarInfo" resultMap="carMap">
+        select car.*
+        from test.Car car
+        where car.userId = #{userId}
+        order by car.id asc
+    </select>
+    <!--保存车辆信息-->
+    <insert id="saveCarInfo" parameterType="com.meibanlu.qa.service.entity.Car">
+        insert into test.Car
+        (
+        userId,
+        carNumber,
+        carBrand,
+        carModel,
+        dateOfBuy,
+        carCity
+        )
+        values
+        (
+        #{userId},
+        #{carNumber},
+        #{carBrand},
+        #{carModel},
+        #{dateOfBuy},
+        #{carCity}
+        )
+    </insert>
+    <!--更新车辆信息-->
+    <update id="updateCarInfo" parameterType="com.meibanlu.qa.service.entity.Car">
+        update test.Car
+        set carNumber = #{carNumber}, carBrand = #{carBrand}, carModel = #{carModel}, dateOfBuy = #{dateOfBuy}, carCity = #{carCity}
+        where id = #{id}
+    </update>
+    <!--    删除车辆信息-->
+    <delete id="deleteCarInfo">
+        delete
+        from test.Car
+        where id = #{carId}
+    </delete>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.analysis.dao.SynonymDao">
+
+    <resultMap id="synonymMap" type="com.meibanlu.qa.analysis.entity.Synonym">
+        <result property="mainWord" column="mainWord"/>
+        <result property="synonymWord" column="synonymWord"/>
+    </resultMap>
+    <!--根据主词查询同义词集合-->
+    <select id="querySynonym" resultMap="synonymMap">
+        select qs.mainWord, qs.synonymWord
+        from qa_synonym qs
+        where qs.mainWord = #{mainWord}
+    </select>
+    <!--插入新同义词-->
+    <insert id="insertSynonym">
+        insert into qa_synonym (mainWord, synonymWord)
+        values (#{mainWord}, #{synonymWord})
+    </insert>
+</mapper>

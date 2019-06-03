@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.analysis.dao.SlotSeqRequireElementDao">
+
+    <resultMap id="requiredMap" type="com.meibanlu.qa.analysis.entity.SlotSeqRequireElement">
+        <id property="id" column="id"/>
+        <result property="slotSeqId" column="slotSeqId"/>
+        <result property="key" column="key"/>
+        <result property="value" column="value"/>
+        <result property="slotId" column="slotId"/>
+        <result property="must" column="must"/>
+    </resultMap>
+    <!--根据词槽序ID查询该词槽序需要的元素列表-->
+    <select id="querySlotSeqRequiredElement" resultMap="requiredMap">
+        select qser.id, qser.slotSeqId, qser.key, qser.value, qser.slotId, qser.must
+        from qa_seq_element_requirment qser
+        where qser.slotSeqId = #{slotSeqId}
+    </select>
+    <!--插入新词槽序需要的元素列表-->
+    <insert id="insertSlotSeqRequiredElement">
+        insert into qa_seq_element_requirment (id, slotSeqId, key, value, slotId, must)
+        values (#{id}, #{slotSeqId}, #{key}, #{value}, #{slotId}, #{must})
+    </insert>
+    <!--更新词槽序需要的元素列表条目-->
+    <update id="updateSlotSeqRequiredElement">
+        update qa_seq_element_requirment set
+        slotSeqId=#{slotSeqId},
+        key=#{key},
+        value=#{value},
+        slotId=#{slotId},
+        must=#{must}
+        where id=#{id}
+    </update>
+    <!--删除-->
+    <delete id="deleteSlotSeqRequiredElement">
+        delete from qa_seq_element_requirment
+        where id=#{id}
+    </delete>
+</mapper>

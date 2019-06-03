@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meibanlu.qa.analysis.dao.SlotDao">
+
+    <resultMap id="slotMap" type="com.meibanlu.qa.analysis.entity.Slot">
+        <id property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="patternMatcher" column="patternMatcher"/>
+        <result property="matcherKey" column="matcherKey"/>
+        <result property="mainWord" column="mainWord"/>
+    </resultMap>
+    <!--根据词槽ID查询词槽-->
+    <select id="querySlotById" resultMap="slotMap">
+        select qs.id, qs.type, qs.patternMatcher, qs.matcherKey, qs.mainWord
+        from qa_slot qs
+        where qs.id = #{slotId}
+    </select>
+    <!--根据词槽序ID查询词槽集合-->
+    <select id="querySlotBySeqId" resultMap="slotMap">
+        select qs.id, qs.type, qs.patternMatcher, qs.matcherKey, qs.mainWord
+        from qa_slot qs, qa_seq_slot_rel qssr
+        where qs.id = qssr.slotId and qssr.slotSeqId = #{seqId}
+        order by qssr.slotPosition asc
+    </select>
+    <!--插入新词槽-->
+    <insert id="insertSlot">
+        insert into qa_slot (id, type, patternMatcher, matcherKey, mainWord)
+        values (#{slotId}, #{type}, #{patternMatcher}, #{matcherKey}, #{mainWord})
+    </insert>
+    <!--更新词槽-->
+    <update id="updateSlot">
+        update qa_slot set
+        type=#{type},
+        patternMatcher=#{patternMatcher},
+        matcherKey=#{matcherKey},
+        mainWord=#{mainWord}
+        where id=#{slotId}
+    </update>
+    <!--根据词槽ID删除词槽-->
+    <delete id="deleteSlotById">
+        delete from qa_slot
+        where id=#{slotId}
+    </delete>
+</mapper>

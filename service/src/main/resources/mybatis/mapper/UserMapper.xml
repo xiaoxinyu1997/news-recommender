@@ -1,0 +1,100 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD com.example.Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meibanlu.qa.service.mapper.UserMapper">
+    <resultMap id="result" type="com.meibanlu.qa.service.entity.User">
+        <result property="userid" column="userid" />
+        <result property="phonenumber" column="phonenumber" />
+        <result property="nickname" column="nickname"/>
+        <result property="age" column="age" />
+        <result property="sex" column="sex" />
+        <result property="city" column="city"/>
+        <result property="registertime" column="registertime" />
+        <result property="newspreferences" column="newspreferences" />
+        <result property="musicpreferences" column="musicpreferences" />
+    </resultMap>
+
+    <select id="Listuser" resultMap="result">
+        SELECT * FROM User
+    </select>
+
+
+    <select id="finduserByuserid"  resultMap="result">
+
+        SELECT * FROM User where userid =#{userid}
+    </select>
+
+    <select id="finduserByphonenumber"  resultMap="result">
+
+        SELECT * FROM User where phonenumber =#{phonenumber}
+    </select>
+
+    <select id="finduserBynickname"  resultMap="result">
+
+        SELECT * FROM User where nickname =#{nickname}
+    </select>
+
+    <insert id="insertuser" parameterType="com.meibanlu.qa.service.entity.User"
+            keyProperty="userid" useGeneratedKeys="true">
+        INSERT INTO User
+        (
+        phonenumber,nickname,age,sex,city,registerTime,newspreferences,musicpreferences,password
+        )
+        VALUES (
+        #{phonenumber},
+        #{nickname},
+        #{age},
+        #{sex},
+        #{city},
+        #{registerTime},
+        #{newspreferences},
+        #{musicpreferences},
+        #{password}
+        )
+    </insert>
+
+    <insert id="registertuser" >
+        INSERT INTO User
+        (
+        phonenumber,password,nickname
+        )
+        VALUES (
+        #{phonenumber},
+        #{password},
+        #{phonenumber}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="int">
+        delete from User where userid=#{userid}
+    </delete>
+
+    <update id="Update" parameterType="com.meibanlu.qa.service.entity.User">
+        update User set phonenumber=#{phonenumber},nickname=#{nickcname},age=#{age},
+        sex=#{sex},city=#{city},registerTime=#{registerTime},newspreferences=#{newspreferences},musicpreferences=#{musicpreferences} where userid=#{userid}
+    </update>
+
+
+    <select id="getUser" parameterType="int" resultType="com.meibanlu.qa.service.entity.User">
+        select *
+        from User where userId=#{id}
+    </select>
+
+    <select id="getUserToBeUpdated" parameterType="java.util.Map"
+            resultType="com.meibanlu.qa.service.entity.User">
+        select * from User where userid in
+        (SELECT userid FROM
+        UserNewsBehavior WHERE
+        endTIme BETWEEN #{begin}
+        AND #{end});
+    </select>
+
+    <update id="updateUserMusicPreferences" parameterType="java.util.Map">
+        UPDATE User SET musicpreferences = #{musicpreferences} WHERE userid = #{userid};
+    </update>
+
+    <update id="updateUserNewsPreferences" parameterType="java.util.Map">
+        UPDATE User SET newspreferences = #{newspreferences} WHERE userid = #{userid};
+    </update>
+</mapper>
